@@ -16,6 +16,10 @@ export const getOneContact = async (req, res, next) => {
     try {
         const { id } = req.params;
 
+        if (id.length !== 24) {
+            return res.status(404).send({ message: "Not found" });
+        }
+
         const result = await Contact.findById(id);
 
         if (result === null) {
@@ -32,6 +36,10 @@ export const getOneContact = async (req, res, next) => {
 export const deleteContact = async (req, res, next) => {
     try {
         const { id } = req.params;
+
+        if (id.length !== 24) {
+            return res.status(404).send({ message: "Not found" });
+        }
 
         const result = await Contact.findByIdAndDelete(id);
 
@@ -51,7 +59,7 @@ export const createContact = async (req, res, next) => {
         const { error } = createContactSchema.validate(req.body);
 
         if (error) {
-            return res.status(400).send({ message: "Bad Request" });
+            return res.status(400).send({ message: error.message });
         }
 
         const contact = {
@@ -74,7 +82,7 @@ export const updateContact = async (req, res, next) => {
         const { error } = updateContactSchema.validate(req.body);
 
         if (error) {
-            return res.status(400).send({ message: "Bad Request" });
+            return res.status(400).send({ message: error.message });
         }
 
         const contact = {
@@ -84,6 +92,10 @@ export const updateContact = async (req, res, next) => {
         }
 
         const { id } = req.params;
+
+        if (id.length !== 24) {
+            return res.status(404).send({ message: "Not found" });
+        }
 
         const result = await Contact.findByIdAndUpdate(id, contact, { new: true });
 
@@ -103,7 +115,7 @@ export const updateStatusContact = async (req, res, next) => {
         const { error } = updateContactFavoriteSchema.validate(req.body);
 
         if (error) {
-            return res.status(400).send({ message: "Bad Request" });
+            return res.status(400).send({ message: error.message });
         }
 
         const favorite = {
@@ -111,6 +123,10 @@ export const updateStatusContact = async (req, res, next) => {
         }
 
         const { id } = req.params;
+
+        if (id.length !== 24) {
+            return res.status(404).send({ message: "Not found" });
+        }
 
         const result = await Contact.findByIdAndUpdate(id, favorite, { new: true });
 
