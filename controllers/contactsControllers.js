@@ -47,7 +47,7 @@ export const deleteContact = async (req, res, next) => {
             return res.status(404).send({ message: "Not found" });
         }
 
-        res.status(204).end();
+        res.status(200).send(result);
     }
     catch (error) {
         next(error);
