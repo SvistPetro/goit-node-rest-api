@@ -1,10 +1,10 @@
 import { createContactSchema, updateContactSchema, updateContactFavoriteSchema } from "../schemas/contactsSchemas.js";
-
 import Contact from "../models/contactModel.js";
 
 export const getAllContacts = async (req, res, next) => {
+
     try {
-        const result = await Contact.find();
+        const result = await Contact.find({ owner: req.user.id});
         res.status(200).send(result);
     }
     catch (error) {
@@ -26,6 +26,11 @@ export const getOneContact = async (req, res, next) => {
             return res.status(404).send({ message: "Not found" });
         }
 
+        if (result.owner.toString() !== req.user.id) {
+            console.log(req.user.id);
+            return res.status(404).send({ message: "Not found" });
+        }
+
         res.status(200).send(result);
     }
     catch (error) {
@@ -38,6 +43,12 @@ export const deleteContact = async (req, res, next) => {
         const { id } = req.params;
 
         if (id.length !== 24) {
+            return res.status(404).send({ message: "Not found" });
+        }
+
+        const searchContact = await Contact.findOne({ _id: id, owner: req.user.id });
+
+        if (searchContact === null) {
             return res.status(404).send({ message: "Not found" });
         }
 
@@ -65,7 +76,8 @@ export const createContact = async (req, res, next) => {
         const contact = {
             name: req.body.name,
             email: req.body.email,
-            phone: req.body.phone
+            phone: req.body.phone,
+            owner: req.user.id
         }
 
         const result = await Contact.create(contact);
@@ -97,11 +109,18 @@ export const updateContact = async (req, res, next) => {
             return res.status(404).send({ message: "Not found" });
         }
 
+        const searchContact = await Contact.findOne({ _id: id, owner: req.user.id });
+
+        if (searchContact === null) {
+            return res.status(404).send({ message: "Not found" });
+        }
+
         const result = await Contact.findByIdAndUpdate(id, contact, { new: true });
 
         if (result === null) {
             return res.status(404).send({ message: "Not found" });
         }
+
         res.status(200).json(result);
 
     }
@@ -125,6 +144,12 @@ export const updateStatusContact = async (req, res, next) => {
         const { id } = req.params;
 
         if (id.length !== 24) {
+            return res.status(404).send({ message: "Not found" });
+        }
+
+        const searchContact = await Contact.findOne({ _id: id, owner: req.user.id });
+
+        if (searchContact === null) {
             return res.status(404).send({ message: "Not found" });
         }
 
