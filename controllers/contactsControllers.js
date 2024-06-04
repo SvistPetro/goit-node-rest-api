@@ -20,14 +20,9 @@ export const getOneContact = async (req, res, next) => {
             return res.status(404).send({ message: "Not found" });
         }
 
-        const result = await Contact.findById(id);
+        const result = await Contact.findOne({ _id: id, owner: req.user.id });
 
         if (result === null) {
-            return res.status(404).send({ message: "Not found" });
-        }
-
-        if (result.owner.toString() !== req.user.id) {
-            console.log(req.user.id);
             return res.status(404).send({ message: "Not found" });
         }
 
@@ -46,13 +41,7 @@ export const deleteContact = async (req, res, next) => {
             return res.status(404).send({ message: "Not found" });
         }
 
-        const searchContact = await Contact.findOne({ _id: id, owner: req.user.id });
-
-        if (searchContact === null) {
-            return res.status(404).send({ message: "Not found" });
-        }
-
-        const result = await Contact.findByIdAndDelete(id);
+        const result = await Contact.findOneAndDelete({ _id: id, owner: req.user.id });
 
         if (result === null) {
             return res.status(404).send({ message: "Not found" });
@@ -109,13 +98,7 @@ export const updateContact = async (req, res, next) => {
             return res.status(404).send({ message: "Not found" });
         }
 
-        const searchContact = await Contact.findOne({ _id: id, owner: req.user.id });
-
-        if (searchContact === null) {
-            return res.status(404).send({ message: "Not found" });
-        }
-
-        const result = await Contact.findByIdAndUpdate(id, contact, { new: true });
+        const result = await Contact.findOneAndUpdate({ _id: id, owner: req.user.id }, contact, { new: true });
 
         if (result === null) {
             return res.status(404).send({ message: "Not found" });
@@ -147,17 +130,12 @@ export const updateStatusContact = async (req, res, next) => {
             return res.status(404).send({ message: "Not found" });
         }
 
-        const searchContact = await Contact.findOne({ _id: id, owner: req.user.id });
-
-        if (searchContact === null) {
-            return res.status(404).send({ message: "Not found" });
-        }
-
-        const result = await Contact.findByIdAndUpdate(id, favorite, { new: true });
+        const result = await Contact.findOneAndUpdate({ _id: id, owner: req.user.id }, favorite, { new: true });
 
         if (result === null) {
             return res.status(404).send({ message: "Not found" });
         }
+
         res.status(200).send(result);
 
     }
