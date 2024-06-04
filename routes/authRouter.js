@@ -9,7 +9,7 @@ authRouter.post("/register", jsonParser, register);
 
 authRouter.post("/login", jsonParser, login);
 
-authRouter.get("/logout", authMiddleware, logout);
+authRouter.post("/logout", authMiddleware, logout);
 
 authRouter.get("/current", authMiddleware, current);
 
