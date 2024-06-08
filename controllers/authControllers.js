@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { userSchema } from "../schemas/userSchema.js";
 import User from "../models/userModel.js";
+import gravatar from "gravatar";
 
 export const register = async (req, res, next) => {
     try {
@@ -21,7 +22,9 @@ export const register = async (req, res, next) => {
 
         const passwordHash = await bcrypt.hash(password, 10);
 
-        const result = await User.create({ password:passwordHash, email });
+        const avatarURL = gravatar.url(email);
+
+        const result = await User.create({ password:passwordHash, email, avatarURL });
 
         res.status(201).send({ user: { email: result.email, subscription: result.subscription }});
     } catch (error) {
@@ -69,25 +72,6 @@ export const logout = async (req, res, next) => {
         
         res.status(204).end();
 
-    } catch (error) {
-        next(error);
-    }
-}
-
-export const current = async (req, res, next) => {
-
-    try {
-        const authorizationHeader = req.headers.authorization;
-        
-        const [_, token] = authorizationHeader.split(" ", 2);
-
-        const result = await User.findOne({ token });
-
-        if (result === null) {
-            return res.status(401).send({ message: "Not authorized" });
-        }
-
-        res.status(200).send({email: result.email, subscription: result.subscription});
     } catch (error) {
         next(error);
     }
