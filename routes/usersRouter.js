@@ -6,6 +6,6 @@ const usersRouter = express.Router();
 
 usersRouter.get("/current", current);
 
-usersRouter.patch("/avatar", uploadMiddleware.single("avatar"), changeAvatar);
+usersRouter.patch("/avatars", uploadMiddleware.single("avatar"), changeAvatar);
 
 export default usersRouter;
