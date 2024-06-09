@@ -25,13 +25,18 @@ export const current = async (req, res, next) => {
 export const changeAvatar = async (req, res, next) => {
 
     try {
+
+        if (!req.file) {
+            return res.status(400).send({ message: "There is no file" });
+        }
+
         const tmpUploadPath = req.file.path;
         const img = await Jimp.read(tmpUploadPath);
         await img.resize(250, 250).writeAsync(tmpUploadPath);
 
         await fs.rename(req.file.path, path.resolve("public", "avatars", req.file.filename));
 
-        const user = await User.findByIdAndUpdate(req.user.id, { avatarURL: path.resolve("avatars", req.file.filename) }, {new: true});
+        const user = await User.findByIdAndUpdate(req.user.id, { avatarURL: `/avatars/${req.file.filename}` }, {new: true});
         
         res.status(200).send({ avatarURL: user.avatarURL });
     } catch (error) {
